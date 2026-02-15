@@ -1,7 +1,13 @@
 from fastapi import FastAPI
+from app.routers import orders
+from app.database import engine, Base
 
-app = FastAPI(title="Order Processing Service")
 
-@app.get("/health")
-async def health_check():
-    return {"status": "ok"}
+app = FastAPI()
+
+
+app.include_router(orders.router, prefix="/orders")
+
+
+Base.metadata.create_all(bind=engine)
+
