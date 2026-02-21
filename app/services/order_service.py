@@ -1,5 +1,6 @@
 from app.errors import OrderNotFound, OrderEmpty, InvalidStatus
 from app.models import Order, OrderStatus
+from app.tasks.order_tasks import process_order_task
 
 
 def service_update_order(order_id, order_data, db):
@@ -35,9 +36,11 @@ def service_process_order(order_id, db):
         raise InvalidStatus()
 
     order.status = OrderStatus.PROCESSING
-
     db.commit()
     db.refresh(order)
+
+    process_order_task.delay(order_id)
+
     return order
 
 
