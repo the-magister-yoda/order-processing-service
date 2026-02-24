@@ -1,6 +1,42 @@
-from app.errors import OrderNotFound, OrderEmpty, InvalidStatus
-from app.models import Order, OrderStatus
+from errors import OrderNotFound, OrderEmpty, InvalidStatus, 
+from models import Order, OrderStatus
 from app.tasks.order_tasks import process_order_task
+
+
+def service_create_order(order, db):
+    db_order = Order(item=order.item, quantity=order.quantity)
+    db.add(db_order)
+    db.commit()
+    db.refresh(db_order)
+    return db_order
+
+
+def service_get_orders(db):
+    orders = db.query(Order).all()
+    if orders is None:
+        raise OrderNotFound()
+    return orders
+
+
+def service_get_order(order_id, db):
+    order = db.query(Order).filter(Order.id == order_id).first()
+
+    if order is None:
+        raise OrderNotFound()
+
+    return order
+
+    
+def service_delete_order(order_id, db):
+    order = db.query(Order).filter(Order.id == order_id).first()
+
+    if order is None:
+        raise OrderNotFound()
+    
+    db.delete(order)
+    db.commit()
+    return {'detail': "Deleted successfully"}
+
 
 
 def service_update_order(order_id, order_data, db):
@@ -61,7 +97,7 @@ def service_complete_order(order_id, db):
 
 
 def service_fail_order(order_id, db):
-    order = db.query(Order).filter(order.id == order_id).first()
+    order = db.query(Order).filter(Order.id == order_id).first()
 
     if order is None:
         raise OrderNotFound()
@@ -74,3 +110,6 @@ def service_fail_order(order_id, db):
     db.commit()
     db.refresh(order)
     return order
+
+
+

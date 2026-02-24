@@ -1,8 +1,8 @@
 import time
 
 from app.celery_app import celery_app
-from app.models import Order, OrderStatus
-from app.database import SessionLocal
+from models import Order, OrderStatus
+from database import SessionLocal
 from app.utils.email import send_email
 
 
@@ -25,7 +25,7 @@ def process_order_task(self, order_id: int):
 
         # 🔥 Отправляем email
         send_email(
-            to_email="nameofemail@mail.ru",
+            to_email="specialforgoodpurpose@mail.ru",
             subject="Заказ завершён",
             body=f"Ваш заказ №{order_id} успешно обработан."
         )

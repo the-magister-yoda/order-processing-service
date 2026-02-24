@@ -1,4 +1,4 @@
-from app.models import OrderStatus
+from models import OrderStatus, UserRole
 
 from pydantic import BaseModel
 from datetime import datetime
@@ -25,4 +25,19 @@ class OrderResponse(BaseModel):
 class OrderUpdate(BaseModel):
     item : Optional[str] = None
     quantity : Optional[int] = None
+
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+    role: UserRole
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
     
