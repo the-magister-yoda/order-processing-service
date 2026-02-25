@@ -1,4 +1,4 @@
-from models import OrderStatus, UserRole
+from app.models import OrderStatus, UserRole
 
 from pydantic import BaseModel
 from datetime import datetime
@@ -40,4 +40,13 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Здесь не нужно from_attributes = True в TokenResponse он не нужен. 
+# Он используется, когда возвращаешь ORM объект.
+# Здесь ты возвращаешь обычный dict.
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+
     

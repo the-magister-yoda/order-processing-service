@@ -1,10 +1,10 @@
-from errors import OrderNotFound, OrderEmpty, InvalidStatus, 
-from models import Order, OrderStatus
+from app.errors import OrderNotFound, OrderEmpty, InvalidStatus
+from app.models import Order, OrderStatus
 from app.tasks.order_tasks import process_order_task
 
 
-def service_create_order(order, db):
-    db_order = Order(item=order.item, quantity=order.quantity)
+def service_create_order(order, db, current_user):
+    db_order = Order(item=order.item, quantity=order.quantity, user_id=current_user.id)
     db.add(db_order)
     db.commit()
     db.refresh(db_order)

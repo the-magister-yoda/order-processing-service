@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from functools import wraps
 from typing import List
 
-from errors import UserNotFound, EmailAlreadyExists, InvalidStatus, WrongPassword
-from database import engine, Base, get_db
-from schemas import UserCreate, UserResponse
-from models import User
-from app.services.user_service import service_create_user, service_login_user
+from app.errors import UserNotFound, EmailAlreadyExists, InvalidStatus, WrongPassword
+from app.database import engine, Base, get_db
+from app.schemas import UserCreate, UserResponse, TokenResponse
+from app.models import User
+from app.services.user_service import service_register_user, service_login_user
 
 
 router = APIRouter()
@@ -29,13 +29,13 @@ def handle_user_errors(func):
     return wrapper
 
 
-@router.post("/create", response_model=UserResponse)
+@router.post("/register", response_model=UserResponse)
 @handle_user_errors
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
-    return service_create_user(user, db) 
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+    return service_register_user(user, db) 
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenResponse)
 @handle_user_errors
 def login_user(user: UserCreate, db: Session = Depends(get_db)):
     return service_login_user(user, db)

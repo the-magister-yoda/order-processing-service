@@ -1,8 +1,8 @@
 import time
 
 from app.celery_app import celery_app
-from models import Order, OrderStatus
-from database import SessionLocal
+from app.models import Order, OrderStatus
+from app.database import SessionLocal
 from app.utils.email import send_email
 
 

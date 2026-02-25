@@ -1,11 +1,11 @@
-ffrom sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError
 
-from errors import InvalidStatus, EmailAlreadyExists, UserNotFound, WrongPassword
-from models import User, UserRole
-from app.core.security import hash_password, verify_password
+from app.errors import InvalidStatus, EmailAlreadyExists, UserNotFound, WrongPassword
+from app.models import User, UserRole
+from app.core.security import hash_password, verify_password, create_access_token
 
 
-def service_create_user(user, db):
+def service_register_user(user, db):
     is_email_taken = db.query(User).filter(User.email == user.email).first()
 
     if is_email_taken is not None:
@@ -35,6 +35,11 @@ def service_login_user(user, db):
     if not verify_password(user.password, db_user.hashed_password):
         raise WrongPassword()
     
+    access_token = create_access_token(
+        data={"sub": str(db_user.id), "role": db_user.role.value}
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
     
 
 

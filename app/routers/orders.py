@@ -3,10 +3,11 @@ from sqlalchemy.orm import Session
 from functools import wraps
 from typing import List
 
-from database import Base, engine, get_db
-from models import Order
-from schemas import OrderCreate, OrderResponse, OrderUpdate
-from errors import OrderNotFound, OrderEmpty, InvalidStatus
+from app.core.dependencies import get_current_user
+from app.database import Base, engine, get_db
+from app.models import Order, User
+from app.schemas import OrderCreate, OrderResponse, OrderUpdate
+from app.errors import OrderNotFound, OrderEmpty, InvalidStatus
 from app.services.order_service import service_create_order, service_get_orders, service_get_order, service_delete_order, service_update_order
 from app.services.order_service import service_process_order, service_complete_order, service_fail_order
 
@@ -30,8 +31,8 @@ def handle_order_errors(func):
 
 @router.post("/", response_model=OrderResponse)
 @handle_order_errors
-def create_order(order: OrderCreate, db: Session = Depends(get_db)):
-    return service_create_order(order, db)
+def create_order(order: OrderCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    return service_create_order(order, db, current_user)
 
 
 @router.get("/", response_model=List[OrderResponse])
